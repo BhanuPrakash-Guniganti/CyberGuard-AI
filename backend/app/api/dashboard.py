@@ -1,3 +1,4 @@
+from asyncio import base_events
 from fastapi import APIRouter, Depends
 from typing import Dict, Any, List
 from backend.app.core.database import get_db
@@ -11,9 +12,9 @@ async def get_dashboard_stats(db = Depends(get_db)):
     alerts_coll = db.get_collection("alerts")
     incidents_coll = db.get_collection("incidents")
 
-    events = await events_coll.find()
-    alerts = await alerts_coll.find()
-    incidents = await incidents_coll.find()
+    events = await events_coll.find().to_list(length=None)
+    alerts = await alerts_coll.find().to_list(length=None)
+    incidents = await incidents_coll.find().to_list(length=None)
 
     total_events = len(events)
     active_incidents = sum(1 for i in incidents if i.get("status") in ["Active", "Contained (Simulated)", "Investigated"])
